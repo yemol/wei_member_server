@@ -16,7 +16,6 @@ exports.cache = function (key, data, expired) {
 
 exports.getCached = function (key) {
   if (cachebox[key] !== null && cachebox[key] !== undefined) {
-    console.log(cachebox[key])
     if ( Date.compare(cachebox[key].expired,  _.now()) > 0 ) {
       return cachebox[key]
     } else {
