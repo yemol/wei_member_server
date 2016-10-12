@@ -9,24 +9,6 @@ require('date-utils')
 
 function findInCache (key){
   return cacheBox.getCached(key)
-  // // get access token with selected key
-  // const curentKey = _.findLastIndex(cachedKeys, function (current){
-  //   return current.name === key
-  // })
-  //
-  // // we cannot find current access token in cache
-  // if (curentKey === -1)  {
-  //   return null
-  // // the acess tokken we saved in chache is expired
-  // } else if ( Date.compare(cachedKeys[curentKey].expires_in, new Date()) < 0 ) {
-  //   _.remove(cachedKeys, function(o){
-  //     o.name === key
-  //   })
-  //   return null
-  // // we can use saved cache
-  // } else {
-  //   return cachedKeys[curentKey]
-  // }
 }
 
 // this used to find api settings of certain weixin account in list

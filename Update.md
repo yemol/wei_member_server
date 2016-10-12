@@ -1,8 +1,6 @@
-# 1/23/2016
-## Project Init  
-## operation log's add interface has been implemented. This interface will be used to record operations.
-## updated mysql adapter using connection pools to get connection from database.
+# 10/12/2016
+## 项目创建
 
-# 2/15/2016
-## Fixed bug in profile method.  
-## Start using mysql-driver to operate mysql databae.
+# 10/12/2016
+## 获取多微信账号Access Token接口完成。
+## token 会进行缓存，并且和token 的超时时间同步。
