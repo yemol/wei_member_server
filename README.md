@@ -6,5 +6,5 @@
 
 
 参数： 
-+ key -> 握手密钥
-+ wei -> 需要获取Access token的微信标识
++ key： 握手密钥
++ wei： 需要获取Access token的微信标识
