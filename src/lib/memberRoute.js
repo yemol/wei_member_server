@@ -14,6 +14,7 @@ const router = express.Router()
 // we will export router here
 module.exports = router
 
+// This path is used to nav user to login page
 router.get('/redirect', (req, res) => {
   const wei = req.query.wei
   if (wei === undefined) {
@@ -25,6 +26,7 @@ router.get('/redirect', (req, res) => {
   }
 })
 
+// This method is used to get user info
 router.get('/userinfo', (req, res) => {
   const key = req.query.key
   const wei = req.query.wei

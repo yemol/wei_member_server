@@ -66,7 +66,6 @@ function getAccessKey (key) {
   return promise
 }
 
-
 function getOpenID (key, code) {
   const promise = new Promise( function(resolve, reject) {
     // get api setting
@@ -101,11 +100,9 @@ function getUserInfo (access_token, openid) {
     // get user info
     const request = require('request')
     const url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' + access_token + '&openid=' + openid + '&lang=zh_CN'
-    app.logger.info(url)
     request(url , function (error, response, body) {
       if (!error && response.statusCode == 200) {
         const result = JSON.parse(body)
-        app.logger.info (result)
         if (result.openid) {
           resolve(result)
         } else {
