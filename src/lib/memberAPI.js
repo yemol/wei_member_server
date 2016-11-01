@@ -7,6 +7,7 @@ import cacheBox from "./cacheBox"
 import _ from "lodash"
 require('date-utils')
 
+// This method is used to get cached access token.
 function findInCache (key){
   return cacheBox.getCached(key)
 }
@@ -18,6 +19,15 @@ function findKey (key){
     return o.name === key;
   })
   return found >=0 ? keysConfig[found] : null
+}
+
+function redirect_page(key, res){
+  const keysetting = findKey(key)
+  if(keysetting === null ) {
+    res.sendStatus(404)
+  } else {
+    res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+  }
 }
 
 
@@ -32,7 +42,6 @@ function getAccessKey (key) {
       // get access token
       const request = require('request')
       const url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + keysetting.appID + '&secret=' +  keysetting.appsecret
-
       request(url , function (error, response, body) {
         if (!error && response.statusCode == 200) {
           const result = JSON.parse(body)
@@ -54,8 +63,66 @@ function getAccessKey (key) {
       resolve(token.data)
     }
   });
-
   return promise
 }
 
+
+function getOpenID (key, code) {
+  const promise = new Promise( function(resolve, reject) {
+    // get api setting
+    const keysetting = findKey(key)
+    // we will not do anthing if we cannot get api setting
+    if(keysetting === null ) reject(null)
+    // get open id
+    const request = require('request')
+    const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + keysetting.appID + '&secret=' +  keysetting.appsecret + '&code=' + code + '&grant_type=authorization_code'
+    request(url , function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        const result = JSON.parse(body)
+        if (result.openid) {
+          // return openid & access_token
+          resolve(result.openid)
+        } else {
+          // we failed getting token
+          reject (result)
+        }
+      } else {
+        // we get error when getting token
+        app.logger.error ('error=' + error + "| statusCode=" + response.statusCode)
+        reject (error)
+      }
+    })
+  });
+  return promise
+}
+
+function getUserInfo (access_token, openid) {
+  const promise = new Promise( function(resolve, reject) {
+    // get user info
+    const request = require('request')
+    const url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' + access_token + '&openid=' + openid + '&lang=zh_CN'
+    app.logger.info(url)
+    request(url , function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        const result = JSON.parse(body)
+        app.logger.info (result)
+        if (result.openid) {
+          resolve(result)
+        } else {
+          // we failed getting token
+          reject (result)
+        }
+      } else {
+        // we get error when getting token
+        app.logger.error ('error=' + error + "| statusCode=" + response.statusCode)
+        reject (error)
+      }
+    })
+  });
+  return promise
+}
+
+exports.get_UserInfo = getUserInfo
+exports.get_OpenID = getOpenID
 exports.get_accessKey = getAccessKey
+exports.redirect_page = redirect_page

@@ -10,33 +10,56 @@ import app from "./app"
 import tool from "./tool.js"
 import memberAPI from "./memberAPI.js"
 
-
 const router = express.Router()
 // we will export router here
 module.exports = router
 
+router.get('/redirect', (req, res) => {
+  const wei = req.query.wei
+  if (wei === undefined) {
+    res.statusCode = 401
+    res.end ("Unauthorized!")
+    return
+  } else {
+    memberAPI.redirect_page(wei, res)
+  }
+})
 
-// Get access token for different wexin account for member system
-router.get('/access_key', (req, res) => {
+router.get('/userinfo', (req, res) => {
   const key = req.query.key
   const wei = req.query.wei
+  const code = req.query.code
   if (key !== config.wechat_access_key || wei === undefined) {
     res.statusCode = 401
     res.end ("Unauthorized!")
     return
   } else {
-    // we have got token
-    memberAPI.get_accessKey(wei)
-    .then ( result => {
-      // we will return 200 status if we saved operation log into database
-      res.statusCode = 200
-      res.set("Content-Type","application/json;charset=utf-8")
-      res.json({"access_token": result})
+    memberAPI.get_accessKey(wei, code)
+    .then ( access_token => {
+      memberAPI.get_OpenID(wei, code)
+      .then ( open_ID => {
+        app.logger.info ("access_token = " + access_token + " | open_ID = " + open_ID)
+        memberAPI.get_UserInfo(access_token, open_ID)
+        .then ( result => {
+          res.statusCode = 200
+          res.set("Content-Type","application/json;charset=utf-8")
+          res.json(result)
+        })
+        .catch (err => {
+          show400(err)
+        })
+      })
+      .catch (err => {
+        show400(err)
+      })
     })
     .catch (err => {
-      // we will return 400 status if we cannot save operation log into database
-      app.logger.error(err)
-      res.status(400).json({ "error": "Infonation you provided is incorrect!" })
+      show400(err)
     })
   }
 })
+
+function show400(message) {
+  app.logger.error(message)
+  res.status(400).json({ "error": "Infonation you provided is incorrect!" })
+}

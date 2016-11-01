@@ -3,6 +3,7 @@ logs
 *.log
 /config.json
 /lib
+/data/keys.json
 
 # Runtime data
 pids
