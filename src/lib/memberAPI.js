@@ -97,7 +97,6 @@ function getOpenID (key, code) {
 
 function getUserInfo (access_token, openid) {
   const promise = new Promise( function(resolve, reject) {
-    // get user info
     const request = require('request')
     const url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' + access_token + '&openid=' + openid + '&lang=zh_CN'
     request(url , function (error, response, body) {

@@ -6,6 +6,8 @@ import path from "path"
 import config from "../config.json"
 import memberRoute from "./lib/memberRoute.js"
 import winston  from "winston"
+import cors from "cors"
+import pack from "../package.json"
 
 app.logger = new winston.Logger({
   level: process.env.NODE_ENV === 'production' ? 'error' : 'info',
@@ -20,6 +22,9 @@ app.use(bodyParser())
 // define the wechat shock service
 app.use("/member", memberRoute)
 
+app.use("/", (req, res) => {
+    res.send("Wexin member mamager system service.<br>Current Version: " +  pack.version + "<br>Author: " + pack.author)
+  })
 
 // We will return null for other locations
 app.use(async (req, res) => {

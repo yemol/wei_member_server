@@ -13,6 +13,8 @@ import memberAPI from "./memberAPI.js"
 const router = express.Router()
 // we will export router here
 module.exports = router
+// support cross domain request
+router.use(cors())
 
 // This path is used to nav user to login page
 router.get('/redirect', (req, res) => {
