@@ -26,7 +26,12 @@ function redirect_page(key, res){
   if(keysetting === null ) {
     res.sendStatus(404)
   } else {
-    res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+    if (key === 'sitv') {
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+    } else {
+      // 如果不是互动的账号就会取得用户信息的流程。(必须是服务号)
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2F#%2Fuserinfo%3fwei=' + key + '&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+    }
   }
 }
 
