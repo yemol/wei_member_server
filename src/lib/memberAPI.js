@@ -21,16 +21,17 @@ function findKey (key){
   return found >=0 ? keysConfig[found] : null
 }
 
-function redirect_page(key, res){
-  const keysetting = findKey(key)
+function redirect_page(key, isDirect, res){
+  const keysetting = isDirect ? findKey(key) : findKey('sitv')
+  console.log (keysetting)
   if(keysetting === null ) {
     res.sendStatus(404)
   } else {
-    if (key === 'sitv') {
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+    if (isDirect) {
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5aa86e7885f60a8a&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2Fstatic%2FgetUserinfo.js&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
     } else {
-      // 如果不是互动的账号就会取得用户信息的流程。(必须是服务号)
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2F#%2Fuserinfo%3fwei=' + key + '&response_type=code&scope=snsapi_base&state=123#wechat_redirect')
+      // 如果不是互动的账号，就会进入用户信息取得流程。用来取得用户的具体信息。
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5aa86e7885f60a8a&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
     }
   }
 }

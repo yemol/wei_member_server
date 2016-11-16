@@ -17,14 +17,16 @@ module.exports = router
 router.use(cors())
 
 // This path is used to nav user to login page
+// we will use diret paramtes to check if this redirect is for sitv or other wei account.
 router.get('/redirect', (req, res) => {
   const wei = req.query.wei
+  const isDirect = req.query.direct === '1'
   if (wei === undefined) {
     res.statusCode = 401
     res.end ("Unauthorized!")
     return
   } else {
-    memberAPI.redirect_page(wei, res)
+    memberAPI.redirect_page(wei, isDirect, res)
   }
 })
 
