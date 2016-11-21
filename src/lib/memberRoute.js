@@ -25,7 +25,7 @@ router.get('/user_service', (req, res) => {
     res.end ("Unauthorized!")
     return
   } else {
-    memberAPI.user_service(wei, res)
+    memberAPI.start_Login(wei, true, res)
   }
 })
 
@@ -38,7 +38,7 @@ router.get('/user_subscribe', (req, res) => {
     res.end ("Unauthorized!")
     return
   } else {
-    memberAPI.user_subscribe(wei, res)
+    memberAPI.start_Login(wei, false, res)
   }
 })
 

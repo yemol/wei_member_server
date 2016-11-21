@@ -21,28 +21,17 @@ function findKey (key){
   return found >=0 ? keysConfig[found] : null
 }
 
-function user_service(key, res){
-  const keysetting = findKey('sitv')
-  console.log (keysetting)
+function startLogin(key, isService, res){
+  const keysetting = isService ? findKey('sitv') : findKey(key)
+  const next_step = isService ?
+    '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FLogin&response_type=code&scope=snsapi_base&state=' : '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FGetUserinfo&response_type=code&scope=snsapi_base&state='
   if(keysetting === null ) {
     res.sendStatus(404)
   } else {
       // 取得用户关联服务号信息。
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FLogin&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + next_step + key + '#wechat_redirect')
   }
 }
-
-function user_subscribe(key, res){
-  const keysetting = findKey(key)
-  console.log (keysetting)
-  if(keysetting === null ) {
-    res.sendStatus(404)
-  } else {
-      // 取得用户关联前端订阅号信息。
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FGetUserinfo&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
-  }
-}
-
 
 function getAccessKey (key) {
   const promise = new Promise( function(resolve, reject) {
@@ -134,5 +123,4 @@ function getUserInfo (access_token, openid) {
 exports.get_UserInfo = getUserInfo
 exports.get_OpenID = getOpenID
 exports.get_accessKey = getAccessKey
-exports.user_service = user_service
-exports.user_subscribe = user_subscribe
+exports.start_Login = startLogin
