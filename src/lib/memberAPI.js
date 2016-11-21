@@ -21,18 +21,25 @@ function findKey (key){
   return found >=0 ? keysConfig[found] : null
 }
 
-function redirect_page(key, isDirect, res){
-  const keysetting = isDirect ? findKey(key) : findKey('sitv')
+function user_service(key, res){
+  const keysetting = findKey('sitv')
   console.log (keysetting)
   if(keysetting === null ) {
     res.sendStatus(404)
   } else {
-    if (isDirect) {
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5aa86e7885f60a8a&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2Fstatic%2FgetUserinfo.js&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
-    } else {
-      // 如果不是互动的账号，就会进入用户信息取得流程。用来取得用户的具体信息。
-      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5aa86e7885f60a8a&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
-    }
+      // 取得用户关联服务号信息。
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FLogin&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
+  }
+}
+
+function user_subscribe(key, res){
+  const keysetting = findKey(key)
+  console.log (keysetting)
+  if(keysetting === null ) {
+    res.sendStatus(404)
+  } else {
+      // 取得用户关联前端订阅号信息。
+      res.redirect(301, 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + keysetting.appID + '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FGetUserinfo&response_type=code&scope=snsapi_base&state=' + key + '#wechat_redirect')
   }
 }
 
@@ -127,4 +134,5 @@ function getUserInfo (access_token, openid) {
 exports.get_UserInfo = getUserInfo
 exports.get_OpenID = getOpenID
 exports.get_accessKey = getAccessKey
-exports.redirect_page = redirect_page
+exports.user_service = user_service
+exports.user_subscribe = user_subscribe
