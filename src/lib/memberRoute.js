@@ -10,12 +10,36 @@ import app from "./app"
 import tool from "./tool.js"
 import memberAPI from "./memberAPI.js"
 import MemberDB from "./memberDB.js"
+import messageAPI from "./messageAPI.js"
 
 const router = express.Router()
 // we will export router here
 module.exports = router
 // support cross domain request
 router.use(cors())
+
+// This path is used to nav user to login page
+// we will use diret paramtes to check if this redirect is for sitv or other wei account.
+router.get('/verify_user', (req, res) => {
+  const mobile = req.query.mobile
+  const key = req.query.key
+  if (key !== config.wechat_access_key || mobile === undefined) {
+    res.statusCode = 401
+    res.end ("Unauthorized!")
+    return
+  } else {
+    if (mobile === undefined) {
+      res.statusCode = 401
+      res.end ("Unauthorized!")
+      return
+    } else {
+      const code = messageAPI.send_VerifyCode(mobile)
+      res.set("Content-Type","text/plain;charset=utf-8")
+      res.statusCode = 200
+      res.end(code)
+    }
+  }
+})
 
 // This path is used to nav user to login page
 // we will use diret paramtes to check if this redirect is for sitv or other wei account.
@@ -57,21 +81,29 @@ router.get('/userinfo', (req, res) => {
     .then ( access_token => {
       memberAPI.get_OpenID(wei, code)
       .then ( open_ID => {
-        app.logger.info ("access_token = " + access_token + " | open_ID = " + open_ID)
         memberAPI.get_UserInfo(access_token, open_ID)
         .then ( result => {
-          new MemberDB().selectOne(result.openid, (error, member) => {
-            app.logger.info (member)
+          // we will return registered user info if checking service wei account.
+          if (wei === config.service_wexin_account) {
+            new MemberDB().selectOne(result.openid, (error, member) => {
+              app.logger.info (member)
+              res.statusCode = 200
+              res.set("Content-Type","application/json;charset=utf-8")
+              res.json({
+                'openid': result.openid,
+                'registered': result.openid === member.openid,
+                'nickname': member.nickname,
+                'sex': member.sex,
+                'headimgurl': member.headimgurl
+              })
+            })
+          } else {
+            app.logger.info (result)
+            // we just return weixin account info here.
             res.statusCode = 200
             res.set("Content-Type","application/json;charset=utf-8")
-            res.json({
-              'openid': result.openid,
-              'registered': result.openid === member.openid,
-              'nickname': member.nickname,
-              'sex': member.sex,
-              'headimgurl': member.headimgurl
-            })
-          })
+            res.json(result)
+          }
         })
         .catch (err => {
           show400(err)

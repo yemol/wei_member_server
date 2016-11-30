@@ -22,7 +22,7 @@ function findKey (key){
 }
 
 function startLogin(key, isService, res){
-  const keysetting = isService ? findKey('sitv') : findKey(key)
+  const keysetting = isService ? findKey(config.service_wexin_account) : findKey(key)
   const next_step = isService ?
     '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FLogin&response_type=code&scope=snsapi_base&state=' : '&redirect_uri=http%3A%2F%2Fhuiyuan.gamefy.cn%2FGetUserinfo&response_type=code&scope=snsapi_base&state='
   if(keysetting === null ) {

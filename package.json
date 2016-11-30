@@ -27,9 +27,11 @@
     "ejs": "^2.3.4",
     "elecpen": "^0.1.5",
     "express": "4.*",
+    "iconv-lite": "^0.4.15",
     "lodash": "^4.7.0",
     "node-uuid": "^1.4.3",
     "request": "^2.69.0",
+    "seedrandom": "^2.4.2",
     "simple-mysql-delegate": "^0.2.7",
     "superagent": "^1.4.0",
     "winston": "^2.1.1"
